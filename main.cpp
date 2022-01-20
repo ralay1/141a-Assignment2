@@ -9,47 +9,52 @@
 #include <string>
 #include "Testable.hpp"
 #include "BufferManager.hpp"
+#include "MemTrack.hpp"
 
 //---------------------------------
 
 //If this won't compile, your Buffer Managerclass may not be ready.
 //If this crashes, check how your Buffer Managerwrites to a stream.
-bool doOCFTests() {
-    ECE141::BufferManager<char> the_buffer("hello world");
-    ECE141::BufferManager<char> the_buffer2("");
-    ECE141::BufferManager<char> the_buffer3(the_buffer);
-    
-    if (!(the_buffer.getLength() == 11)) {
-        return false;
+bool doOCFTests(std::ostream &anOutput) {
+
+  MemTrack::list.enable(true);
+
+  {
+    ECE141::BufferManager<char> theBuf1(100);
+    ECE141::BufferManager<char> theBuf2(theBuf1);
+
+    if(100!=theBuf1.getCapacity()) {
+      anOutput << "ctor copy failed\n";
+      return false;
     }
     
-    if (!(the_buffer2.getLength() == 0)) {
-        return false;
+    if(theBuf1.getCapacity()!=theBuf2.getCapacity()) {
+      anOutput << "ctor copy failed\n";
+      return false;
     }
-    
-    if (!(the_buffer3.getLength() == 11)) {
-        return false;
-    }
-    
-    the_buffer2 = the_buffer3;
-    if (!(the_buffer2.getLength() == 11)) {
-        return false;
-    }
-    
-    if (strcmp(the_buffer.getBuffer(), "hello world") != 0) {
-        return false;
-    }
-    
-    ECE141::BufferManager<char> the_buffer4;
-    the_buffer4 = "abcd";
-    if (!(the_buffer4.getLength() == 4)) {
-        return false;
-    }
-    
-    return true;
+  }
+  
+  if(MemTrack::list.leaked()) {
+    MemTrack::list.empty(anOutput, "oops, you leaked!");
+  }
+
+  return true;
 }
 
-bool doExpandTests() {
+bool doExpandTests(std::ostream &anOutput) {
+
+  ECE141::BufferManager<char> theBuf1;
+  theBuf1.willExpand(100);
+  if(100!=theBuf1.getCapacity()) {
+    anOutput << "expand failed\n";
+  }
+  theBuf1.willExpand(200);
+  if(200!=theBuf1.getCapacity()) {
+    anOutput << "expand failed\n";
+  }
+
+  
+/*
     ECE141::BufferManager<char> the_buffer4("abcd");
     
     the_buffer4.append("efgh");
@@ -75,11 +80,23 @@ bool doExpandTests() {
     if (strcmp(the_buffer4.getBuffer(), "abijxyklcdefgh") != 0) {
         return false;
     }
+*/
     return true;
 }
 
 
-bool doContractTests() {
+bool doCompactTests(std::ostream &anOutput) {
+  
+  ECE141::BufferManager<char> theBuf1(100);
+  if(100!=theBuf1.getCapacity()) {
+    anOutput << "expand failed\n";
+  }
+  theBuf1.willCompact(50);
+  if(50!=theBuf1.getCapacity()) {
+    anOutput << "expand failed\n";
+  }
+
+  /*
     ECE141::BufferManager<char> the_buffer4("hello world");
     
     the_buffer4.erase(4, 4);
@@ -100,7 +117,7 @@ bool doContractTests() {
     if (strcmp(the_buffer4.getBuffer(), "") != 0) {
         return false;
     }
-    
+*/
     return true;
 }
 
@@ -112,20 +129,24 @@ int main(int argc, const char * argv[]) {
     static const char* kMsgs[]={"FAIL","PASS"};
     if(argc>1) {
         std::string temp(argv[1]);
-        
+        std::stringstream theOutput;
+      
+
         if("compile"==temp) {
             std::cout << temp << " test " << kMsgs[true] << "\n";
-            return 0;
         }
         else if("ocf"==temp) {
-            std::cout << temp << " test " << kMsgs[doOCFTests()] << "\n";
+            std::cout << temp << " test " << kMsgs[doOCFTests(theOutput)] << "\n";
         }
         else if("expand"==temp) {
-            std::cout << temp << " test " << kMsgs[doExpandTests()] << "\n";
+          std::cout << temp << " test " << kMsgs[doExpandTests(theOutput)] << "\n";
         }
-        else if("contract"==temp) {
-            std::cout << temp << " test " << kMsgs[doContractTests()] << "\n";
+        else if("compact"==temp) {
+            std::cout << temp << " test " << kMsgs[doCompactTests(theOutput)] << "\n";
         }
+
+        std::cout << theOutput.str() << "\n";
+
     }
     
     
