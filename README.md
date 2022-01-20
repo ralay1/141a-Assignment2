@@ -42,7 +42,7 @@ In this assignment, you are going to build the base class: `BufferManager` that 
 
 ### Part 1. -- Build your BufferManager<> template class
 
-The `BufferManager` template class will be the base class for your `String` class.  Since this class is a template, the entire implementation will exist inside the BufferManager.hpp file. There is no BufferManager.cpp fie. 
+The `BufferManager` template class will be used in your upcoming `String` class assignment.  Since this class is a template, the entire implementation will exist inside the BufferManager.hpp file. There is no BufferManager.cpp file.  
 
 > Prior experience says that if you get this right, most of next week's assignment is relatively easy. If you get this wrong, most of the rest of your implementation will not work.
 
