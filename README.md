@@ -64,8 +64,10 @@ In your starter project, you'll see we already created a (mostly) empty `BufferM
 //basic buffer manager methods...
   size_t getCapacity() const; //tells us the current capacity 
   T*     getBuffer() const;   //returns ptr to internal buffer
-  size_t willExpand(size_t aNewSize, size_t anOffset=0); //tell BM to grow the buffer to aNewSize; (optional anOffset says where growth may happen)
-  size_t willCompact(size_t aNewSize, size_t anOffset=0); //tell BM to shrink the buffer to aNewSize 
+  
+    //Ask to grow buffer to aNewSize; (optional anOffset says where growth may happen)
+  size_t willExpand(size_t aNewSize, size_t anOffset=0);   
+  size_t willCompact(size_t aNewSize, size_t anOffset=0); //Ask to shrink the buffer to aNewSize 
 ```
 
 Here are the use-case scenarios you need to be able to handle:
