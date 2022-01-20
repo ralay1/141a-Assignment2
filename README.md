@@ -36,75 +36,7 @@ class Searchable;  //a trait class meant to be "mixed-in" to other classes
 class Sortable;    //another trait class
 ```
 
-In this assignment, you are going to build the base class: `BufferManager`. 
-
-### Class interfaces (incomplete)
-
-The purpose of the `BufferManager` class is to manage data flow at an abstract level so that it can be applied to many programs (`String` class being one of them). 
-
-For readablilty, however, we're going to outline the publics methods you need to implement below. This is not an exhaustive list. You will need to implement other (non-public) methods too -- including some you may decide to build on your own. 
-
-> Note: At first glance, it looks like you have 50+ methods to implement. If you are careful and thoughtful, however, you can reuse nearly have of your methods, and you can write much less code.   In our solution, for example, we only had to implement about 25 methods (the rest reused the ones we wrote).
-
-
-```cpp
-	
-   //normal OCF methods to construct a string class...
-      ctor
-      dtor
-      etc...
-      
-   //buffermanager methods 
-   
-      - buffer allocation
-      - buffer copying
-      - buffer resizing
-      - buffer destruction
-      
-      size_t getLength() const; //retrieve length of current string
-
-
-   //mutable interface
-	
-    	char&      operator[](int pos);
-
-    	String&    insert(size_t aPos, const String &aString);
-    	String&    insert(size_t aPos, const char *aBuffer);
-    	String&    insert(size_t aPos, const char aChar);
-      
-    	String&    replace(size_t pos, size_t len, const String &aString);
-    	String&    replace(size_t pos, size_t len, const char *aBuffer);
-              
-    	String&     operator+=(const String &aString);
-    	String&     operator+=(const char *aBuffer);
-
-    	String&     erase(size_t pos, size_t len);	
-
-   //relational (comparison) interface
-	
-	bool      	operator<(const String &aString) const;
-    	bool      	operator<(const char *aBuffer) const;
-        
-    	bool      	operator<=(const String &aString) const;
-    	bool      	operator<=(const char *aBuffer) const;
-    
-    	bool      	operator>(const String &aString) const;
-    	bool      	operator>(const char *aBuffer) const;
-    
-    	bool      	operator>=(const String &aString) const;
-    	bool      	operator>=(const char *aBuffer) const;
-    
-    	bool      	operator==(const String &aString) const;
-    	bool      	operator==(const char *aBuffer) const;
-    
-    	bool      	operator!=(const String &aString) const;
-    	bool      	operator!=(const char *aBuffer) const;
-
-   //searching interface 
-   
-	  int            find(const String &aString, size_t offset=0) const;
-
-```
+In this assignment, you are going to build the base class: `BufferManager` that will be used in next week's assignment.
 
 ---
 
@@ -120,7 +52,7 @@ The job of this class is to allocate, manage, and (eventually) delete the undery
 2. Guarantee that the character buffer is always terminated with a null
 3. Always tracks the current length of the string
 4. Automatically and correctly grow/shrink the heap-buffer when your user changes the string 
-5. Automatically delete the underlying heap-buffer when the `String` object is destroyed
+5. Automatically delete the underlying heap-buffer when the `String` object is destroyed. Consider using `std::unique_ptr<>`. 
 
 The BufferManager class wants to be as efficient as possible. As the user changes the string, this class should grow/shrink the underlying buffer in an time/space efficient way as possible.  We discussed this challenge in lecture, so refer to our discussion on this topic.
 
@@ -149,6 +81,8 @@ In this scenario, the `BufferManager` needs to pre-allocate space on the heap fo
 1. Should it be exactly as large as the initialize string (+1 for the null terminator?)
 2. Should be somewhat larger, so the string could grow "a little" without having to resize your buffer
 
+> We refer to these choices as, "policy decisions". It is possible to write our code so that policies can be determined using class composition. This allows our user to influence how our class should behave (thus, policy).
+
 #### Scenario 3 -- Mutating (add/insert/delete) some/all of your string
 
 In this scenario, the user is using part of the mutatation API to add/delete/insert characters into an existing string. This can change the size requirements of the underlying buffer. 
@@ -166,17 +100,19 @@ It's likely that your buffer will need to be resized at this point. We discussed
 4. delete the original buffer
 5. set your internal buffer pointer to your buffer
 
+> NOTE: The need to expand/grow your buffer can happen in a few ways. Someone might want to "append" characters to a `String`, which will cause the buffer to grow, and new characters appended. A different behavior might occur if someone tries to "insert" characters into an existing string. While the buffer may still expand, the underlying data in the buffer may be _logically_ split. Characters before the insertion point will remain unchanged. New characters will be inserted at the insertion point. And finally, characters after the insertion point may be shifted to the right.  A similar set of operations may occur if someone chooses to delete a span of characters in the middle of a `String`.  How can your `BufferManager` make these operations easier for the `String` class?
+
 ---
-
-
 
 ### Part 5. -- Testing your Buffer Manager class implementation 
 
-See? Building a basic buffer manager class isn't all that hard. But making it run fast, and ensuring that uses memory efficiently takes considerably more effort. Finding the right balance between memory usage and performance can be a challenge.  In order to test your memory utilization and performance, you must write your own tests. To help you, we've added two extra functions in the Testable class:
+See? Building a basic buffer manager class isn't all that hard. But making it run fast, and ensuring that uses memory efficiently takes considerably more effort. Finding the right balance between memory usage and performance can be a challenge.  In order to test your memory utilization and performance, you must write your own tests. 
+
+> Although building the `String` class doesn't need to happen until next week, you might consider starting one now, to give yourself a way to test your `BufferManager` class more easily. It's up to you, as it's not required this week.
 
 Still - no self-respecting engineer would consider the job done unless they had also provided a complete set of tests to ensure that the solution worked as designed. Well, we've already provided a basic testing harness for you, contained in the Testable.hpp file. 
 
-> It is up to you to fully implement the tests for the `Buffer Manager` class.
+> It is up to you to fully implement the tests for the `Buffer Manager` class. We have provided a copy of the simple, `Testable` class for this purpose. You might also consider using the excellent and widely used google testing framework (gtest). 
 
 
 ## Grading
@@ -184,13 +120,14 @@ Still - no self-respecting engineer would consider the job done unless they had 
 Your submission will be graded along four dimensions:
 
 ```
-Compiles test: 20pts
-Values test:   30pts
-Compare test:  30pts
+Compile test: 20pts
+OCF test:   20pts
+Expand test:  20pts
+Compact test:  20pts
 Manual code review: 20pts
 ```
 
-As we explained earlier, in addition to passing the basic tests, your code will be measured for memory efficiency and performance. Our grading test harness will generate 1000's of strings and measure your memory usage. So make sure you test performance and memory efficiency carefully.
+As we explained earlier, in addition to passing the basic tests, your code will be measured for memory efficiency and performance. Next week, our grading test harness will generate 1000's of strings and measure your memory usage and performance. So make sure you test performance and memory efficiency carefully.
 
 
 ## Code Style Guide
