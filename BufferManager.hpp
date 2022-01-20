@@ -16,16 +16,16 @@ namespace ECE141   {
   public:
     BufferManager() {}    //finish me
     BufferManager(const BufferManager &aCopy) {} //finish me
-    BufferManager(const char *aBuffer) {}
             
-    //---- other ocf methods ---
+    //---- Add other ocf methods ---
     
-    //---- add BufferManager methods...
-    
-    friend std::ostream& operator<<(std::ostream& aStream,
-                                    const BufferManager& aVar) {
-      return aStream;
-    }
+    //---- Basic methods you must implement. Add more if you need to...
+      
+    size_t getCapacity() const;
+    T*     getBuffer() const;
+    size_t willExpand(size_t aNewSize, size_t anOffset=0);
+    size_t willCompact(size_t aNewSize, size_t anOffset=0);
+  
   };
 
 }
