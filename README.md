@@ -58,7 +58,17 @@ The BufferManager class wants to be as efficient as possible. As the user change
 
 The overall performance the `BufferManager` class achieves will impact your grade.  So think about time/space efficiency. It's not hard if you're paying attention to when and how you allocate/reallocate/copy your internal buffer. 
 
-In your starter project, you'll see we already created a (mostly) empty `BufferManager<>` class. You'll also notice we didn't provide any guidance on which methods you need to implement to make this class work. That decision is up to you. But we can tell you the scenarios you need to be able to handle:
+In your starter project, you'll see we already created a (mostly) empty `BufferManager<>` class. You'll notice that the `BufferManager` class have a very thin interface. You're free to expand and extend it -- but you must keep the basic methods we've provided. 
+
+```
+//basic buffer manager methods...
+  size_t getCapacity() const; //tells us the current capacity 
+  T*     getBuffer() const;   //returns ptr to internal buffer
+  size_t willExpand(size_t aNewSize, size_t anOffset=0); //tell BM to grow the buffer to aNewSize; (optional anOffset says where growth may happen)
+  size_t willCompact(size_t aNewSize, size_t anOffset=0); //tell BM to shrink the buffer to aNewSize 
+```
+
+Here are the use-case scenarios you need to be able to handle:
 
 #### Scenario 1 -- Construction
 
