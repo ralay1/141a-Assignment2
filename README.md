@@ -10,7 +10,7 @@ This assignment has three parts:
 2. Second, you're going to implement tests to ensure that your class works correctly -- then check it into git. 
 3. The third part of this assignment is a "code review" -- where each student will code-review another student's work.
 
-## Welcome to JobCo!
+## Welcome to JobCo!!
 
 You've just started a new internship at JobCo, a chic software company in the heart of Silicon Valley that sells party balloons with integrated block-chain tracking. You've met your new manager, Chloe, who introduces you to the rest of the team. As you are wisked through the office, you race past a herd of zombies that are wandering aimlessly in the break room. "Oh my goodness", you say, in disbelief.  "Don't let them bother you", Chloe says smiling, "that's just the marketing department taking a lunch break". JobCo is going to be very interesting.
 
