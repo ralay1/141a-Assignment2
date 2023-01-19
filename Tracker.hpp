@@ -35,25 +35,25 @@ struct Tracker {
     size_t  line;
     size_t  filenum;
   };
-  
+
   Tracker(bool aEnabled=false) {
     enabled=aEnabled;
     names.push_back("unknown");
   }
-    
+
   bool isEnabled() const {return enabled;}
-  
+
   Tracker& enable(bool aState) {
     enabled=aState;
     return *this;
   }
-  
+
   Tracker& reset() { //called to forget prior ptrs...
     names.clear();
     list.clear();
     return *this;
   }
-  
+
   void* track(void* aPtr) {
     if(enabled) {
       enabled=false;
@@ -76,7 +76,7 @@ struct Tracker {
       }
       else names.push_back(theName);
       enabled=wasEnabled;
-      
+
       auto theEnd=list.rend();
       for (auto it = list.rbegin(); it!=theEnd; it++) {
         if(it->ptr==aPtr) {
@@ -88,7 +88,7 @@ struct Tracker {
     }
     return aPtr;
   }
-  
+
   Tracker& untrack(void* aPtr) {
     auto theIter = std::find_if(
       list.begin(), list.end(), [aPtr](Memo const& aMemo){
@@ -97,18 +97,18 @@ struct Tracker {
     if(theIter != list.end()) {list.erase(theIter);}
     return *this;
   }
-  
+
   Tracker& reportLeaks(std::ostream &aStream) {
     for(auto &theMem: list) {
       aStream << theMem.ptr << " : "
         << names[theMem.filenum] << "("
         << theMem.line << ")\n";
     }
-    return *this; 
+    return *this;
   }
-  
+
 protected:
-  
+
   Tracker(const Tracker &aTracker) {}
 
   bool                      enabled;

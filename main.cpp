@@ -10,7 +10,6 @@
 #include "autotest.hpp"
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
-#include <memory>
 
 //-----------------------------------
 
@@ -70,6 +69,10 @@ int main(int argc, const char * argv[]) {
             std::cout<< temp << " test search" << kMsgs[doSearchTests(theOutput)] << "\n";
             std::cout<< temp << " test compare" << kMsgs[doCompareTests(theOutput)] << "\n";
             std::cout<< temp << " test speed" << kMsgs[doSpeedTest(theOutput)] << "\n";
+        }
+        else{
+            std::cout<<"Unknown test " << temp << "\n";
+            return 1;
         }
         std::cout << theOutput.str() << "\n";
     }

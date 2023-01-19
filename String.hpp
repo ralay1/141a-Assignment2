@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "BufferManager.hpp"
-#include "Searchable.hpp"
-#include "Sortable.hpp"
+//#include "Searchable.hpp"
+//#include "Sortable.hpp"
 
 //It's up to you to decide the how the string and buffermanager
 //will work together -- IS_A vs HAS-A.
@@ -73,7 +73,7 @@ namespace ECE141 {
         friend std::ostream& operator << (std::ostream &anOut, const String &aStr);
         friend std::istream& operator >> (std::istream &anOut,  String &aString);
 
-        
+
 
     protected:
         size_t length;

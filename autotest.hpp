@@ -14,7 +14,6 @@
 #include <string>
 #include "Timer.hpp"
 #include "Testable.hpp"
-#include "MemTrack.hpp"
 
 bool assertTrue(const char* aMessage, bool aValue,
                 std::ostream& anOutput = std::cout) {
@@ -31,11 +30,11 @@ bool assertFalse(const char* aMessage, bool aValue,
 }
 
 std::string getWords(size_t aCount) {
-    static std::vector<std::string> kWords={
-        "hello","world","goodbye","yellow","brick",
-        "road","what","you","won't","do","there",
-        "apricot","silly","songs","glass","keys",
-        "apple","bananna","pear","grape","orange"};
+    std::vector<std::string> kWords={
+            "hello","world","goodbye","yellow","brick",
+            "road","what","you","won't","do","there",
+            "apricot","silly","songs","glass","keys",
+            "apple","bananna","pear","grape","orange"};
     size_t theSize=kWords.size();
     const char *thePrefix="";
     std::string theResult;
@@ -51,7 +50,8 @@ std::string getWords(size_t aCount) {
 //If this crashes, check how your Buffer Managerwrites to a stream.
 bool doBufferManagerOCFTests(std::ostream &anOutput) {
 
-    MemTrack::list.enable(true);
+    auto &theTracker=Tracker::instance();
+    theTracker.enable(true).reset();
 
     {
         ECE141::BufferManager<char> theBuf1(100);
@@ -68,37 +68,45 @@ bool doBufferManagerOCFTests(std::ostream &anOutput) {
         }
     }
 
-    if(MemTrack::list.leaked()) {
-        MemTrack::list.empty(anOutput, "oops, you leaked!");
-    }
-
+    theTracker.reportLeaks(anOutput);
     return true;
 }
 
 bool doBufferManagerExpandTests(std::ostream &anOutput) {
 
-    ECE141::BufferManager<char> theBuf1;
-    theBuf1.willExpand(100);
-    if(100<theBuf1.getCapacity()) {
-        anOutput << "expand failed\n";
+    auto& theTracker = Tracker::instance();
+    theTracker.enable(true).reset();
+    {
+        ECE141::BufferManager<char> theBuf1;
+        theBuf1.willExpand(100);
+        if (100 < theBuf1.getCapacity()) {
+            anOutput << "expand failed\n";
+        }
+        theBuf1.willExpand(200);
+        if (200 < theBuf1.getCapacity()) {
+            anOutput << "expand failed\n";
+        }
+
     }
-    theBuf1.willExpand(200);
-    if(200<theBuf1.getCapacity()) {
-        anOutput << "expand failed\n";
-    }
+    theTracker.reportLeaks(anOutput);
     return true;
 }
 
 
 bool doBufferManagerCompactTests(std::ostream &anOutput) {
-    ECE141::BufferManager<char> theBuf1(100);
-    if(100<theBuf1.getCapacity()) {
-        anOutput << "expand failed\n";
+    auto& theTracker = Tracker::instance();
+    theTracker.enable(true).reset();
+    {
+        ECE141::BufferManager<char> theBuf1(100);
+        if(100<theBuf1.getCapacity()) {
+            anOutput << "expand failed\n";
+        }
+        theBuf1.willCompact(50);
+        if(50<theBuf1.getCapacity()) {
+            anOutput << "expand failed\n";
+        }
     }
-    theBuf1.willCompact(50);
-    if(50<theBuf1.getCapacity()) {
-        anOutput << "expand failed\n";
-    }
+    theTracker.reportLeaks(anOutput);
     return true;
 }
 
@@ -106,10 +114,10 @@ bool doBufferManagerCompactTests(std::ostream &anOutput) {
 //If this won't compile, your Buffer Managerclass may not be ready.
 //If this crashes, check how your Buffer Managerwrites to a stream.
 bool doOCFTests(std::ostream &anOutput) {
-    
+
     auto &theTracker=Tracker::instance();
     theTracker.enable(true).reset();
-    
+
     {
         ECE141::BufferManager<char> theBuf1(100);
         ECE141::BufferManager<char> theBuf2(theBuf1);
@@ -120,21 +128,21 @@ bool doOCFTests(std::ostream &anOutput) {
             anOutput << "ctor failed\n";
             return false;
         }
-        
+
         //string copy-ctor test...
         ECE141::String theECEString2(theECEString1);
         if (theTestStr1!=theECEString2.getBuffer()) {
             anOutput << "copy ctor() failed\n";
             return false;
         }
-        
+
         auto theTestStr2=getWords(2);
         theECEString1 = theTestStr2.c_str();
         if (theTestStr2!=theECEString1.getBuffer()) {
             anOutput << "operator=char* failed\n";
             return false;
         }
-        
+
         theECEString2 = theECEString1;
         auto theBuffer=theECEString1.getBuffer();
         auto theBuffer2=theECEString2.getBuffer();
@@ -142,7 +150,7 @@ bool doOCFTests(std::ostream &anOutput) {
             anOutput << "operator=string failed\n";
             return false;
         }
-        
+
         theTestStr2=getWords(2);
         std::string theSTDString1(theTestStr2.c_str());
         ECE141::String theECEString5(theTestStr2.c_str());
@@ -150,14 +158,14 @@ bool doOCFTests(std::ostream &anOutput) {
             anOutput << "operator[] failed\n";
             return false;
         }
-        
+
         theTestStr2=getWords(1);
         ECE141::String theECEString6(theTestStr2.c_str());
         std::string theSTDString6(theTestStr2);
-        
+
         ECE141::String theECEString7;
         std::string theSTDString7;
-        
+
         theTestStr2=getWords(1);
         theSTDString7=theSTDString6+theTestStr2.c_str();
         theECEString7=theECEString6+theTestStr2.c_str();
@@ -166,7 +174,7 @@ bool doOCFTests(std::ostream &anOutput) {
             anOutput << "operator+(const String& lhs, const char* rhs) failed\n";
             return false;
         }
-        
+
         theTestStr2=getWords(1);
         ECE141::String theECEString8(theTestStr2.c_str());
         std::string theSTDString8(theTestStr2.c_str());
@@ -177,12 +185,9 @@ bool doOCFTests(std::ostream &anOutput) {
             anOutput << "operator+(const String& lhs, const String& rhs) failed\n";
             return false;
         }
-        
-        return true;
     }
-    
+
     theTracker.reportLeaks(anOutput);
-    
     return true;
 }
 
@@ -231,7 +236,7 @@ bool doInsertTests(std::ostream &anOutput) {
 
 bool doAppendTests(std::ostream &anOutput) {
     auto& theTracker = Tracker::instance();
-    theTracker.reset();
+    theTracker.enable(true).reset();
     {
         std::string theSTDString1("hello world");
         ECE141::String theECEString1("hello world");
@@ -255,11 +260,13 @@ bool doAppendTests(std::ostream &anOutput) {
 }
 
 bool doEraseTests(std::ostream &anOutput) {
-    
+    auto& theTracker = Tracker::instance();
+    theTracker.enable(true).reset();
+
     auto theWords=getWords(3);
     std::string    theSTDString1(theWords.c_str());
     ECE141::String theECEString1(theWords.c_str());
-    
+
     theSTDString1.erase(3, 5);
     theECEString1.erase(3, 5);
     auto theBuffer=theECEString1.getBuffer();
@@ -267,11 +274,11 @@ bool doEraseTests(std::ostream &anOutput) {
         anOutput << "erase(size_t aPos, size_t aLength) failed\n";
         return false;
     }
-    
+
     auto theWords2 = getWords(5);
     std::string    theSTDString2(theWords2.c_str());
     ECE141::String theECEString2(theWords2.c_str());
-    
+
     theSTDString2.erase(0, 1);
     theECEString2.erase(0, 1);
     auto theBuffer2 = theECEString2.getBuffer();
@@ -279,11 +286,11 @@ bool doEraseTests(std::ostream &anOutput) {
         anOutput << "erase(size_t aPos, size_t aLength) failed\n";
         return false;
     }
-    
+
     auto theWords3 = getWords(8);
     std::string    theSTDString3(theWords3.c_str());
     ECE141::String theECEString3(theWords3.c_str());
-    
+
     theSTDString3.erase(theSTDString3.length()-2, theSTDString3.length()-1);
     theECEString3.erase(theECEString3.size()-2, theECEString3.size()-1);
     auto theBuffer3 = theECEString3.getBuffer();
@@ -291,11 +298,11 @@ bool doEraseTests(std::ostream &anOutput) {
         anOutput << "erase(size_t aPos, size_t aLength) failed\n";
         return false;
     }
-    
+
     theWords3 = getWords(5);
     std::string    theSTDString4(theWords3.c_str());
     ECE141::String theECEString4(theWords3.c_str());
-    
+
     theSTDString4.erase(12, 100);
     theECEString4.erase(12, 100); //truncate
     auto theBuffer4=theECEString4.getBuffer();
@@ -303,120 +310,125 @@ bool doEraseTests(std::ostream &anOutput) {
         anOutput << "erase(12,100) (truncate) failed\n";
         return false;
     }
-  
+
     return true;
 }
 
 bool doReplaceTests(std::ostream &anOutput) {
-  auto temp=getWords(3);
-  std::string theSTDString1(temp.c_str());
-  ECE141::String theECEString1(temp.c_str());
-  
-  std::string theRep=getWords(2);
-  std::string theSTDRep1(theRep.c_str());
-  ECE141::String theECERep1(theRep.c_str());
-  
-  theSTDString1.replace(2,2, theSTDRep1);
-  theECEString1.replace(2,2, theECERep1);
-  if (!(theECEString1.getBuffer() == theSTDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  
-  //replace all...
-  theRep=getWords(2);
-  theSTDString1=theRep.c_str();
-  theECEString1=theRep.c_str();
-  
-  theRep=getWords(3);
-  theSTDString1.replace(0, theSTDString1.size(), theSTDRep1);
-  theECEString1.replace(0, theECEString1.size(), theECERep1);
-  if (!(theECEString1.getBuffer()==theSTDString1)) {
-    anOutput << "replace(0, size(), string)\n";
-    return false;
-  }
-  
-  auto theWords=getWords(2);
-  std::string STDString1(theWords);
-  ECE141::String ECEString5(theWords.c_str());
-  
-  theWords=getWords(3);
-  std::string STDString2(theWords);
-  ECE141::String ECEString6(theWords.c_str());
-  STDString1.replace(5, 8, STDString2);
-  ECEString5.replace(5, 8, ECEString6);
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  STDString1.replace(3, 2, STDString2);
-  ECEString5.replace(3, 2, ECEString6);
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  STDString1.replace(5, 6, STDString2);
-  ECEString5.replace(5, 6, ECEString6);
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  
-  STDString1.replace(7, 8, STDString2);
-  ECEString5.replace(7, 8, ECEString6);
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  
-  theWords=getWords(1);
-  STDString1.replace(3, 9, theWords.c_str());
-  ECEString5.replace(3, 9, theWords.c_str());
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  
-  theWords=getWords(1);
-  STDString1.replace(5, 4, theWords.c_str());
-  ECEString5.replace(5, 4, theWords.c_str());
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  
-  theWords=getWords(1);
-  STDString1.replace(0, 0, theWords.c_str());
-  ECEString5.replace(0, 0, theWords.c_str());
-  if (!(ECEString5.getBuffer() == STDString1)) {
-    anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-    return false;
-  }
-  return true;
+
+    auto& theTracker = Tracker::instance();
+    theTracker.enable(true).reset();
+
+    auto temp=getWords(3);
+    std::string theSTDString1(temp.c_str());
+    ECE141::String theECEString1(temp.c_str());
+
+    std::string theRep=getWords(2);
+    std::string theSTDRep1(theRep.c_str());
+    ECE141::String theECERep1(theRep.c_str());
+
+    theSTDString1.replace(2,2, theSTDRep1);
+    theECEString1.replace(2,2, theECERep1);
+    if (!(theECEString1.getBuffer() == theSTDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+
+    //replace all...
+    theRep=getWords(2);
+    theSTDString1=theRep.c_str();
+    theECEString1=theRep.c_str();
+
+    theRep=getWords(3);
+    theSTDString1.replace(0, theSTDString1.size(), theSTDRep1);
+    theECEString1.replace(0, theECEString1.size(), theECERep1);
+    if (!(theECEString1.getBuffer()==theSTDString1)) {
+        anOutput << "replace(0, size(), string)\n";
+        return false;
+    }
+
+    auto theWords=getWords(2);
+    std::string STDString1(theWords);
+    ECE141::String ECEString5(theWords.c_str());
+
+    theWords=getWords(3);
+    std::string STDString2(theWords);
+    ECE141::String ECEString6(theWords.c_str());
+    STDString1.replace(5, 8, STDString2);
+    ECEString5.replace(5, 8, ECEString6);
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+    STDString1.replace(3, 2, STDString2);
+    ECEString5.replace(3, 2, ECEString6);
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+    STDString1.replace(5, 6, STDString2);
+    ECEString5.replace(5, 6, ECEString6);
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+
+    STDString1.replace(7, 8, STDString2);
+    ECEString5.replace(7, 8, ECEString6);
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+
+    theWords=getWords(1);
+    STDString1.replace(3, 9, theWords.c_str());
+    ECEString5.replace(3, 9, theWords.c_str());
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+
+    theWords=getWords(1);
+    STDString1.replace(5, 4, theWords.c_str());
+    ECEString5.replace(5, 4, theWords.c_str());
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+
+    theWords=getWords(1);
+    STDString1.replace(0, 0, theWords.c_str());
+    ECEString5.replace(0, 0, theWords.c_str());
+    if (!(ECEString5.getBuffer() == STDString1)) {
+        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+        return false;
+    }
+    return true;
 }
 
 bool doSearchTests(std::ostream &anOutput) {
+
     std::string STDString1("hello there world");
     ECE141::String ECEString1("hello there world");
     if (!(ECEString1.find("e", 5)==(int)STDString1.find("e", 5))) {
-      anOutput << "find(const char *aBuffer, size_t anOffset=0)\n";
-      return false;
+        anOutput << "find(const char *aBuffer, size_t anOffset=0)\n";
+        return false;
     }
     if (!(ECEString1.find("ere")==(int)STDString1.find("ere"))) {
-      anOutput << "find(const char *aBuffer, size_t anOffset=0)\n";
-      return false;
+        anOutput << "find(const char *aBuffer, size_t anOffset=0)\n";
+        return false;
     }
     std::string STDString2("world");
     ECE141::String ECEString2("world");
     if(!(ECEString1.find(ECEString2)==(int)STDString1.find(STDString2))) {
-      anOutput << "find(const T &aTarget, size_t anOffset=0)\n";
-      return false;
+        anOutput << "find(const T &aTarget, size_t anOffset=0)\n";
+        return false;
     }
     std::string STDString3("hello world");
     ECE141::String ECEString3("hello world");
     if (!(ECEString3[4]==STDString3[4])) {
-      anOutput << "operator[]\n";
-      return false;
+        anOutput << "operator[]\n";
+        return false;
     }
     return true;
 }
@@ -426,32 +438,32 @@ bool doCompareTests(std::ostream &anOutput) {
     const char* theBuf=theWords.c_str();
     ECE141::String theString1(theBuf);
     std::string theSTLString1(theBuf);
-    
+
     //first -- test operator== (comparison)...
     if (!(theSTLString1==theBuf && theString1==theBuf)) {
         anOutput << "operator==(const char *aBuffer) fail\n";
         return false;
     }
-    
+
     ECE141::String theString2(theBuf);
     std::string theSTLString2(theBuf);
     if (!(theString1==theString2 && theSTLString1==theSTLString2)) {
         anOutput << "operator==(const T &aString)\n";
         return false;
     }
-    
+
     if (theString1!=theBuf && theSTLString1!=theBuf) {
         anOutput << "operator!=(const char *aBuffer) fail\n";
         return false;
     }
-    
+
     ECE141::String theString3(theBuf);
     std::string theSTLString3(theBuf);
     if (theString1!=theString3 && theSTLString1!=theSTLString3) {
         anOutput << "operator!=(const T &aString) fail\n";
         return false;
     }
-    
+
     const char* temp="zoologists rock";
     theWords=getWords(2);
     theBuf=theWords.c_str();
@@ -461,29 +473,29 @@ bool doCompareTests(std::ostream &anOutput) {
         anOutput << "operator<(const T* aBuffer) fail\n";
         return false;
     }
-    
+
     theSTLString1=temp;
     theString1=temp;
     if (!(theString4<theString1 && theSTLString4<theSTLString1)) {
         anOutput << "operator<(const T* aBuffer) fail\n";
         return false;
     }
-    
+
     if (!(theSTLString4<=temp && theString4<=temp)) {
         anOutput << "operator<=(const char *aBuffer)\n";
         return false;
     }
-    
+
     if (!(theString4<=theString1 && theSTLString4<=theSTLString1)) {
         anOutput << "operator<=(const T &aString)\n";
         return false;
     }
-    
+
     if (!(theString4<=theString4 && theSTLString4<=theSTLString4)) {
         anOutput << "operator<=(const T &aString)\n";
         return false;
     }
-    
+
     std::string str1("able and ready");
     theWords=getWords(2);
     theBuf=theWords.c_str();
@@ -493,37 +505,36 @@ bool doCompareTests(std::ostream &anOutput) {
         anOutput << "operator>(const char *aBuffer)\n";
         return false;
     }
-    
+
     theString1=str1.c_str();
     if (!(theSTLString5>str1 && theString5>theString1)) {
         anOutput << "operator>(const T &aString)\n";
         return false;
     }
-    
+
     if (!(theSTLString5>=theSTLString5 && theString5>=theString5)) {
         anOutput << "operator>=(const T &aString)\n";
         return false;
     }
-    
+
     if (!(theString5>=theBuf && theSTLString5>=theBuf)) {
         anOutput << "operator>=(const char *aBuffer)\n";
         return false;
     }
-    
     return true;
 }
 
 bool doSpeedTest(std::ostream& anOutput) {
-  double ECE141StringTime = 0;
-  double stdStringTime = 0;
-  
-  {
-        
-    ECE141::Timer theTimer;
-    
-    auto theWords=getWords(2);
-    
-/* UNCOMMENT HIS WHEN YOUR STRING IS WORKING...
+    double ECE141StringTime = 0;
+    double stdStringTime = 0;
+
+    {
+
+        ECE141::Timer theTimer;
+
+        auto theWords=getWords(2);
+
+/*. UNCOMMENT HIS WHEN YOUR STRING IS WORKING...
 
     theTimer.start();
     ECE141::String temp("this is a block that gets reused");
@@ -544,34 +555,34 @@ bool doSpeedTest(std::ostream& anOutput) {
 
 */
 
-    theTimer.start();
-        
-    std::string temp1("this is a block that gets reused");
-    anOutput << "\nTesting std::string class performance...\n";
-    for (int i = 0; i < 90000; i++) {
-      std::string theString(theWords.c_str());
-      theString += temp1;
-      theString += temp1;
-      for (int j = 0; j < 20; j++) {
-          theString.insert(10, temp1, 0, temp1.size());
-          theString += (temp1);
-          theString.erase(30, 10);
-      }
-      std::string theOther(theString);
-    }
-    theTimer.stop();
-    stdStringTime = theTimer.elapsed();
-      
-    anOutput << "std::string " << stdStringTime
-             << " Your string " << ECE141StringTime << "\n";
-  }
-  
-  if (ECE141StringTime > (stdStringTime * 2.0)) {
-    anOutput << "your string implementation is too slow!\n";
-    return false;
-  }
+        theTimer.start();
 
-  return true;
+        std::string temp1("this is a block that gets reused");
+        anOutput << "\nTesting std::string class performance...\n";
+        for (int i = 0; i < 90000; i++) {
+            std::string theString(theWords.c_str());
+            theString += temp1;
+            theString += temp1;
+            for (int j = 0; j < 20; j++) {
+                theString.insert(10, temp1, 0, temp1.size());
+                theString += (temp1);
+                theString.erase(30, 10);
+            }
+            std::string theOther(theString);
+        }
+        theTimer.stop();
+        stdStringTime = theTimer.elapsed();
+
+        anOutput << "std::string " << stdStringTime
+                 << " Your string " << ECE141StringTime << "\n";
+    }
+
+    if (ECE141StringTime > (stdStringTime * 2.0)) {
+        anOutput << "your string implementation is too slow!\n";
+        return false;
+    }
+
+    return true;
 }
 
 
