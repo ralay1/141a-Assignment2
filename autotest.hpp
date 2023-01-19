@@ -197,17 +197,17 @@ bool doInsertTests(std::ostream &anOutput) {
     {
       std::string     theSTDString1(getWords(2));
       ECE141::String  theECEString1(theSTDString1.c_str());
-      
+
       std::string     temp(getWords(3));
       ECE141::String  theECEString2(temp.c_str());
-      
+
       theECEString1.insert(5, theECEString2, 0, temp.size());
       theSTDString1.insert(5, temp, 0, temp.size());
       if (theSTDString1!=theECEString1.getBuffer()) {
           anOutput << "insert(size_t anIndex, const String &aStr, size_t aStrIndex, size_t aStrCount) failed\n";
           return false;
       }
-      
+
       temp=getWords(2);
       theSTDString1.insert(8, temp.c_str(), 3, 6);
       theECEString1.insert(8, temp.c_str(), 3, 6);
@@ -262,7 +262,7 @@ bool doAppendTests(std::ostream &anOutput) {
 bool doEraseTests(std::ostream &anOutput) {
     auto& theTracker = Tracker::instance();
     theTracker.enable(true).reset();
-
+    {
     auto theWords=getWords(3);
     std::string    theSTDString1(theWords.c_str());
     ECE141::String theECEString1(theWords.c_str());
@@ -310,6 +310,8 @@ bool doEraseTests(std::ostream &anOutput) {
         anOutput << "erase(12,100) (truncate) failed\n";
         return false;
     }
+    }
+    theTracker.reportLeaks(anOutput);
 
     return true;
 }
@@ -318,91 +320,94 @@ bool doReplaceTests(std::ostream &anOutput) {
 
     auto& theTracker = Tracker::instance();
     theTracker.enable(true).reset();
+    {
+        auto temp=getWords(3);
+        std::string theSTDString1(temp.c_str());
+        ECE141::String theECEString1(temp.c_str());
 
-    auto temp=getWords(3);
-    std::string theSTDString1(temp.c_str());
-    ECE141::String theECEString1(temp.c_str());
+        std::string theRep=getWords(2);
+        std::string theSTDRep1(theRep.c_str());
+        ECE141::String theECERep1(theRep.c_str());
 
-    std::string theRep=getWords(2);
-    std::string theSTDRep1(theRep.c_str());
-    ECE141::String theECERep1(theRep.c_str());
+        theSTDString1.replace(2,2, theSTDRep1);
+        theECEString1.replace(2,2, theECERep1);
+        if (!(theECEString1.getBuffer() == theSTDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
 
-    theSTDString1.replace(2,2, theSTDRep1);
-    theECEString1.replace(2,2, theECERep1);
-    if (!(theECEString1.getBuffer() == theSTDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
+        //replace all...
+        theRep=getWords(2);
+        theSTDString1=theRep.c_str();
+        theECEString1=theRep.c_str();
+
+        theRep=getWords(3);
+        theSTDString1.replace(0, theSTDString1.size(), theSTDRep1);
+        theECEString1.replace(0, theECEString1.size(), theECERep1);
+        if (!(theECEString1.getBuffer()==theSTDString1)) {
+            anOutput << "replace(0, size(), string)\n";
+            return false;
+        }
+
+        auto theWords=getWords(2);
+        std::string STDString1(theWords);
+        ECE141::String ECEString5(theWords.c_str());
+
+        theWords=getWords(3);
+        std::string STDString2(theWords);
+        ECE141::String ECEString6(theWords.c_str());
+        STDString1.replace(5, 8, STDString2);
+        ECEString5.replace(5, 8, ECEString6);
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
+        STDString1.replace(3, 2, STDString2);
+        ECEString5.replace(3, 2, ECEString6);
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
+        STDString1.replace(5, 6, STDString2);
+        ECEString5.replace(5, 6, ECEString6);
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
+
+        STDString1.replace(7, 8, STDString2);
+        ECEString5.replace(7, 8, ECEString6);
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
+
+        theWords=getWords(1);
+        STDString1.replace(3, 9, theWords.c_str());
+        ECEString5.replace(3, 9, theWords.c_str());
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
+
+        theWords=getWords(1);
+        STDString1.replace(5, 4, theWords.c_str());
+        ECEString5.replace(5, 4, theWords.c_str());
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
+
+        theWords=getWords(1);
+        STDString1.replace(0, 0, theWords.c_str());
+        ECEString5.replace(0, 0, theWords.c_str());
+        if (!(ECEString5.getBuffer() == STDString1)) {
+            anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
+            return false;
+        }
     }
+        theTracker.reportLeaks(anOutput);
 
-    //replace all...
-    theRep=getWords(2);
-    theSTDString1=theRep.c_str();
-    theECEString1=theRep.c_str();
-
-    theRep=getWords(3);
-    theSTDString1.replace(0, theSTDString1.size(), theSTDRep1);
-    theECEString1.replace(0, theECEString1.size(), theECERep1);
-    if (!(theECEString1.getBuffer()==theSTDString1)) {
-        anOutput << "replace(0, size(), string)\n";
-        return false;
-    }
-
-    auto theWords=getWords(2);
-    std::string STDString1(theWords);
-    ECE141::String ECEString5(theWords.c_str());
-
-    theWords=getWords(3);
-    std::string STDString2(theWords);
-    ECE141::String ECEString6(theWords.c_str());
-    STDString1.replace(5, 8, STDString2);
-    ECEString5.replace(5, 8, ECEString6);
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
-    STDString1.replace(3, 2, STDString2);
-    ECEString5.replace(3, 2, ECEString6);
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
-    STDString1.replace(5, 6, STDString2);
-    ECEString5.replace(5, 6, ECEString6);
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
-
-    STDString1.replace(7, 8, STDString2);
-    ECEString5.replace(7, 8, ECEString6);
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
-
-    theWords=getWords(1);
-    STDString1.replace(3, 9, theWords.c_str());
-    ECEString5.replace(3, 9, theWords.c_str());
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
-
-    theWords=getWords(1);
-    STDString1.replace(5, 4, theWords.c_str());
-    ECEString5.replace(5, 4, theWords.c_str());
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
-
-    theWords=getWords(1);
-    STDString1.replace(0, 0, theWords.c_str());
-    ECEString5.replace(0, 0, theWords.c_str());
-    if (!(ECEString5.getBuffer() == STDString1)) {
-        anOutput << "replace(size_t pos, size_t len, const String& aString)\n";
-        return false;
-    }
     return true;
 }
 
