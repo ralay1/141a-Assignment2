@@ -21,59 +21,64 @@
 namespace ECE141 {
 
 
-  template<typename T=char, size_t aPresize=32>
-  class String {
-  public:
+    template<typename T=char, size_t aPresize=32>
+    class String {
+    public:
 
-    //all OCF methods...     
-    String(const String &aString);
-    String(const char* aBuffer);
-  
-    size_t size() const {return length;}
-    
-    String& operator=(const String &aCopy);
-    //add version to assign from const char*
-     
-    //mutation methods...
-    T& operator[](size_t pos);
-    
-    String  operator+(const String &aString);
-    //add method to add const char*
-    //add method to support "hello"+theStringObject  
-             
-    String& operator+=(const String &aString);
-    //add method to append const char*
+        //add rest of the OCF methods...
+        String(const String &aString);
+        String(const char* aBuffer);
 
-    String& insert(size_t anIndex, const String &aStr, size_t aStrIndex,
-                   size_t aStrCount);
-    //add method to insert const char*
+        String& operator=(const String &aCopy);
+        //add version to assign from const char*
 
-    String& insert(size_t anIndex, T aChar);
+        size_t size() const {return length;}
 
-    String& replace(size_t anIndex, size_t aMaxCopyLen, const String &aString);
-    //add method to replace const char*
-       
-    String& erase(size_t anIndex, size_t aCount);
-    
-      //Comparision methods...
-    int compare( const String& aString ) const;
-      //add method to add compare const char*
-    
-    bool operator==(const String &aString) const {return true;}
-    bool operator!=(const String &aString) const {return !(*this==aString);}
-    bool operator<(const String &aString) const {return false;}
-    bool operator<=(const String &aString) const {return false;}
-    bool operator>(const String &aString) const {return false;}
-    bool operator>=(const String &aString) const {return false;}
-    //Add version(s) to support const char*... 
+        //mutation methods...
+        T& operator[](size_t pos);
 
-      //Search...
-    int find( const String &aString, size_t anIndex = 0 );
-                 
-    friend std::ostream& operator << (std::ostream &anOut, const String &aStr);    
-    friend std::istream& operator >> (std::istream &anOut,  String &aString);
-  };  
-     
+        String  operator+(const String &aString);
+        //add method to add const char*
+        //add method to support "hello"+theStringObject
+
+        String& operator+=(const String &aString);
+        //add method to append const char*
+
+        String& insert(size_t anIndex, const String &aStr, size_t aStrIndex,
+                       size_t aStrCount);
+        //add method to insert const char*
+
+        String& insert(size_t anIndex, T aChar);
+
+        String& replace(size_t anIndex, size_t aMaxCopyLen, const String &aString);
+        //add method to replace const char*
+
+        String& erase(size_t anIndex, size_t aCount);
+
+        //Comparision methods...
+        int compare( const String& aString ) const;
+        //add method to add compare const char*
+
+        bool operator==(const String &aString) const {return true;}
+        bool operator!=(const String &aString) const {return !(*this==aString);}
+        bool operator<(const String &aString) const {return false;}
+        bool operator<=(const String &aString) const {return false;}
+        bool operator>(const String &aString) const {return false;}
+        bool operator>=(const String &aString) const {return false;}
+        //Add version(s) to support const char*...
+
+        //Search...
+        int find( const String &aString, size_t anIndex = 0 );
+
+        friend std::ostream& operator << (std::ostream &anOut, const String &aStr);
+        friend std::istream& operator >> (std::istream &anOut,  String &aString);
+
+        
+
+    protected:
+        size_t length;
+    };
+
 } //end namespace
 
 #endif /* String_hpp */

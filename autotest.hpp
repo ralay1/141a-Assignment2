@@ -13,6 +13,8 @@
 #include "String.hpp"
 #include <string>
 #include "Timer.hpp"
+#include "Testable.hpp"
+#include "MemTrack.hpp"
 
 bool assertTrue(const char* aMessage, bool aValue,
                 std::ostream& anOutput = std::cout) {
@@ -47,6 +49,62 @@ std::string getWords(size_t aCount) {
 
 //If this won't compile, your Buffer Managerclass may not be ready.
 //If this crashes, check how your Buffer Managerwrites to a stream.
+bool doBufferManagerOCFTests(std::ostream &anOutput) {
+
+    MemTrack::list.enable(true);
+
+    {
+        ECE141::BufferManager<char> theBuf1(100);
+        ECE141::BufferManager<char> theBuf2(theBuf1);
+
+        if(100<theBuf1.getCapacity()) {
+            anOutput << "ctor copy failed\n";
+            return false;
+        }
+
+        if(theBuf1.getCapacity()!=theBuf2.getCapacity()) {
+            anOutput << "ctor copy failed\n";
+            return false;
+        }
+    }
+
+    if(MemTrack::list.leaked()) {
+        MemTrack::list.empty(anOutput, "oops, you leaked!");
+    }
+
+    return true;
+}
+
+bool doBufferManagerExpandTests(std::ostream &anOutput) {
+
+    ECE141::BufferManager<char> theBuf1;
+    theBuf1.willExpand(100);
+    if(100<theBuf1.getCapacity()) {
+        anOutput << "expand failed\n";
+    }
+    theBuf1.willExpand(200);
+    if(200<theBuf1.getCapacity()) {
+        anOutput << "expand failed\n";
+    }
+    return true;
+}
+
+
+bool doBufferManagerCompactTests(std::ostream &anOutput) {
+    ECE141::BufferManager<char> theBuf1(100);
+    if(100<theBuf1.getCapacity()) {
+        anOutput << "expand failed\n";
+    }
+    theBuf1.willCompact(50);
+    if(50<theBuf1.getCapacity()) {
+        anOutput << "expand failed\n";
+    }
+    return true;
+}
+
+
+//If this won't compile, your Buffer Managerclass may not be ready.
+//If this crashes, check how your Buffer Managerwrites to a stream.
 bool doOCFTests(std::ostream &anOutput) {
     
     auto &theTracker=Tracker::instance();
@@ -55,18 +113,7 @@ bool doOCFTests(std::ostream &anOutput) {
     {
         ECE141::BufferManager<char> theBuf1(100);
         ECE141::BufferManager<char> theBuf2(theBuf1);
-        
-        //test bufmgr...
-        if (theBuf1.getCapacity()<100) {
-            anOutput << "ctor copy failed\n";
-            return false;
-        }
-        
-        if (theBuf1.getCapacity() != theBuf2.getCapacity()) {
-            anOutput << "ctor copy failed\n";
-            return false;
-        }
-        
+
         auto theTestStr1=getWords(1);
         ECE141::String theECEString1(theTestStr1.c_str());
         if (theTestStr1!=theECEString1.getBuffer()) {
