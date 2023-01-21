@@ -20,10 +20,13 @@ namespace ECE141 {
     size_t count;
   public:
     
-    Testable() : count{0} {}
+    Testable() : count{} {}
     using OptString = std::optional<std::string>;
     virtual OptString getTestName(size_t anIndex) const=0;
     virtual bool operator()(const std::string &aName)=0;
+    virtual bool operator()(const std::string &aName, std::ostream &aStream){
+        return (*this)(aName);
+    };
     
     size_t runTests() {
       size_t theCount{0};
