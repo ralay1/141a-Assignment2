@@ -7,93 +7,68 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "Testable.hpp"
-#include "BufferManager.hpp"
-#include "MemTrack.hpp"
-
-//---------------------------------
-
-//If this won't compile, your Buffer Managerclass may not be ready.
-//If this crashes, check how your Buffer Managerwrites to a stream.
-bool doOCFTests(std::ostream &anOutput) {
-
-  MemTrack::list.enable(true);
-
-  {
-    ECE141::BufferManager<char> theBuf1(100);
-    ECE141::BufferManager<char> theBuf2(theBuf1);
-
-    if(100<theBuf1.getCapacity()) {
-      anOutput << "ctor copy failed\n";
-      return false;
-    }
-    
-    if(theBuf1.getCapacity()!=theBuf2.getCapacity()) {
-      anOutput << "ctor copy failed\n";
-      return false;
-    }
-  }
-  
-  if(MemTrack::list.leaked()) {
-    MemTrack::list.empty(anOutput, "oops, you leaked!");
-  }
-
-  return true;
-}
-
-bool doExpandTests(std::ostream &anOutput) {
-
-  ECE141::BufferManager<char> theBuf1;
-  theBuf1.willExpand(100);
-  if(100<theBuf1.getCapacity()) {
-    anOutput << "expand failed\n";
-  }
-  theBuf1.willExpand(200);
-  if(200<theBuf1.getCapacity()) {
-    anOutput << "expand failed\n";
-  }
-  return true;
-}
-
-
-bool doCompactTests(std::ostream &anOutput) {
-  ECE141::BufferManager<char> theBuf1(100);
-  if(100<theBuf1.getCapacity()) {
-    anOutput << "expand failed\n";
-  }
-  theBuf1.willCompact(50);
-  if(50<theBuf1.getCapacity()) {
-    anOutput << "expand failed\n";
-  }
-  return true;
-}
+#include "autotest.hpp"
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
 //-----------------------------------
 
 int main(int argc, const char * argv[]) {
-  
     static const char* kMsgs[]={"FAIL","PASS"};
     if(argc>1) {
         std::string temp(argv[1]);
         std::stringstream theOutput;
-      
+        BufferManagerAutoTests bufferManagerTest;
+        StringAutoTests stringTest;
+
+
+        srand(static_cast<uint32_t>(time(NULL)));
 
         if("compile"==temp) {
             std::cout << temp << " test " << kMsgs[true] << "\n";
         }
-        else if("ocf"==temp) {
-            std::cout << temp << " test " << kMsgs[doOCFTests(theOutput)] << "\n";
+        else if("BufferOCF" == temp) {
+            std::cout<< temp << " test " << kMsgs[bufferManagerTest("OCFTest",theOutput)] << "\n";
         }
-        else if("expand"==temp) {
-          std::cout << temp << " test " << kMsgs[doExpandTests(theOutput)] << "\n";
+        else if("OCF"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("OCFTest", theOutput)] << "\n";
         }
-        else if("compact"==temp) {
-            std::cout << temp << " test " << kMsgs[doCompactTests(theOutput)] << "\n";
+        else if("Expand"==temp) {
+            std::cout << temp << " test " << kMsgs[bufferManagerTest("ExpandTest",theOutput)] << "\n";
         }
-
+        else if("Compact"==temp) {
+            std::cout << temp << " test " << kMsgs[bufferManagerTest("CompactTest",theOutput)] << "\n";
+        }
+        else if("Insert"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("InsertTest",theOutput)] << "\n";
+        }
+        else if("Append"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("AppendTest",theOutput)] << "\n";
+        }
+        else if("Replace"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("ReplaceTest",theOutput)] << "\n";
+        }
+        else if("Erase"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("EraseTest",theOutput)] << "\n";
+        }
+        else if("Search"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("SearchTest",theOutput)] << "\n";
+        }
+        else if("Compare"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("CompareTest",theOutput)] << "\n";
+        }
+        else if("Speed"==temp) {
+            std::cout << temp << " test " << kMsgs[stringTest("SpeedTest",theOutput)] << "\n";
+        }
+        else if("All"==temp) {
+            stringTest.runTests();
+            bufferManagerTest.runTests();
+        }
+        else{
+            std::cout<<"Unknown test " << temp << "\n";
+            return 1;
+        }
         std::cout << theOutput.str() << "\n";
     }
-        
     return 0;
 }
-
