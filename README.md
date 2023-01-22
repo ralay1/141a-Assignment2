@@ -55,10 +55,13 @@ In this assignment, you are first going to build a `Buffer Manager` class. This 
 memory allocations and deallocations.  Then, you're going to build a `String` class that uses your `Buffer Manager` class.
 Finally, you're going to write tests for both classes, and then do a code review of another student's work.
 
-Buffer Manager class should be able to allocate memory, keep track of its size, expand and contract the size of the buffer,
-and free the memory when it is no longer needed. The `String` class should be able to store a string of characters, using
-the `Buffer Manager` class to manage the memory.  The `String` class should also be able to append characters to the end,
-handle modification of the characters, support relation operators, and have a find method.
+The `BufferManager` class should handle memory allocation, keeping track of the allocated size, expand and contract the size of the buffer as needed,
+and free the buffer memory when it is no longer needed. Whereas the `BufferManager` will handle memory management issues, the `String` class will handle all the operations that a string provides:
+
+- initialization
+- append, insert, delete, replace substring
+- comparision operators (<,<=,==,>,>=, !=)
+- searching operations (find substring)
 
 In this assignment, you should build the string class using an "aspect-oriented" design technique.  Instead of building 
 one (large) class, you're should assemble your `String` class from several smaller, "special-purpose" classes, 
@@ -66,7 +69,7 @@ like `BufferManager'.  You might make other little helper classes for other feat
 
 > NOTE: You may not use the `std::string` class (or derivatives) to build your `String` class.  You can use `std::string` 
 > as a tool to help you do testing, like we do in the autograder.  You may use library functions, like `std::strcpy`, 
-> `std::memcpy`, `std::strlen`. and so forth.
+> `std::memcpy`, `std::strlen`. and so forth, but you can't use STL containers for your string.
 
 ---
 
