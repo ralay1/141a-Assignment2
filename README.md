@@ -140,7 +140,7 @@ should be.
 > We refer to these choices as, "policy decisions". It is possible to write our code so that policies can be determined 
 > using class composition. This allows our user to influence how our class should behave (thus, policy).
 
-#### Scenario 3 -- Mutating (add/insert/delete) some/all of your string
+#### Scenario 3 -- Mutating (add/insert/replace/delete) some/all of your string
 
 In this scenario, the user is using part of the mutatation API to add/delete/insert characters into an existing string. 
 This can change the size requirements of the underlying buffer. 
