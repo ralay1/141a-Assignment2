@@ -321,22 +321,21 @@ Your submission will be graded along four dimensions:
 
 ``` cpp
 Buffer Manager Tests
-    Compile test: 10pts
-    OCF test:   10pts
+    Compile test: 5pts
+    OCF test:   5pts
     Expand test:  10pts
     Compact test:  10pts
-    Manual code review: 10pts
 
 String Class Tests
     OCF Tests: 5pts
-    Search Tests: 5pts
-    Compare Tests: 7.5pts
-    Insert Tests: 7.5pts
-    Append Tests: 7.5pts
+    Insert Tests: 10pts
+    Append Tests: 5pts
     Replace Tests: 5pts
     Erase Tests: 5pts
-    Performance Tests: 2.5pts
-    Coding Style: 5pts
+    Search Tests: 10pts
+    Compare Tests: 10pts
+    Performance Tests: 10pts
+    Coding Style: 10pts
 ```
 
 In addition to passing the basic string tests (StringTest), your code will be measured for memory efficiency and performance. 
