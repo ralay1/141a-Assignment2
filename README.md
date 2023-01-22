@@ -1,4 +1,4 @@
-# WI22-Assignment2
+# WI23-Assignment2
 Design, test, and build a BufferManager, and String class that uses the BufferManager.
 
 #### DEADLINE HERE
@@ -316,9 +316,6 @@ if(!(theString==theSTLString.c_str())) {  //SHOULD  be valid!
 After you have your tests working, and your class is fully implemented, you can try out the speed test we provided in the `Testing` class.  You'll have to uncomment the call (and the code) in the `runSpeedTest()` function.
 
 
-
-
-
 ## Grading
 
 Your submission will be graded along four dimensions:
@@ -363,7 +360,7 @@ Here are some guidelines for things that matter:
 - Partition your logic into class methods as needed to maintain clarity
 - Document your code with comments that clearly indicate what you’re doing at a high level
 
-## Submitting Your Work - Due Jan 26th at 11:30p (PST)
+## Submitting Your Work - Due Jan XXX at 11:30p (PST)
 
 You’ll recall that your work is due by 11:30pm (PST).  We strongly recommend that you aim for 6p (PST) as to avoid the  
 last minute mishaps that frequently occur when panic related to an impending deliverable begins, and we all tend to make silly mistakes.  
