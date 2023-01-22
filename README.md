@@ -51,7 +51,7 @@ have a tremendous impact on performance and memory management.
 
 ## Assignment Details
 
-Over this week's assignment, you are first going to build a `Buffer Manager` class. This class will be used to manage
+In this assignment, you are first going to build a `Buffer Manager` class. This class will be used to manage
 memory allocations and deallocations.  Then, you're going to build a `String` class that uses your `Buffer Manager` class.
 Finally, you're going to write tests for both classes, and then do a code review of another student's work.
 
