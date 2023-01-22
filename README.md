@@ -254,7 +254,7 @@ First, it's possible to implement the `char*` version, and let the `String` vers
 (if you're careful).  Second, it is possible to implement some of your operators in terms of others. For example: 
 `X==Y` and `X!=Y` are logical opposites. That means you can implement one in terms of the other. `X!=Y` is the same as `!(X==Y)`.
 
-Try to implement some of your relational operators in terms of the logical opposites.
+> Try to implement some of your relational operators in terms of the logical opposites.
 
 #### Part 3d -- Implement the Find() Methods
 In this step, you will add support for the `Find()` method, which will allow a user of your class to search within the
