@@ -231,7 +231,7 @@ character buffer, including:
 > to your string, and the `String` class should worry about manipulating data in the buffer, assuming the buffer is properly sized.
 
 
-##### -- Design your code before you implement ANYTHING...
+> Design your code before you implement ANYTHING...
 
 One of the most interesting aspects of a string class, is how much code gets shared and reused between different operations. 
 For example, both **append** and **insert** operations cause the string to get grow.  The **replace** is a combination of 
