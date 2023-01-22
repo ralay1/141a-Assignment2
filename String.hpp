@@ -26,8 +26,8 @@ namespace ECE141 {
     public:
 
         //add rest of the OCF methods...
+        String(const char* aBuffer=0); //default ctor
         String(const String &aString);
-        String(const char* aBuffer);
 
         String& operator=(const String &aCopy);
         //add version to assign from const char*
