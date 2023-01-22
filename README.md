@@ -1,6 +1,6 @@
 # WI22-Assignment2
-Design, test, and build our own Buffer Manager class
-Build oir own string class using our buffer manager
+Design, test, and build a BufferManager, and String class that uses the BufferManager.
+
 #### DEADLINE HERE
 
 ## Introduction
