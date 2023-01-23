@@ -92,7 +92,7 @@ private:
             ECE141::BufferManager<char> theBuf1(100);
             ECE141::BufferManager<char> theBuf2(theBuf1);
 
-            if(100<theBuf1.getCapacity()) {
+            if(100>theBuf1.getCapacity()) {
                 anOutput << "ctor copy failed\n";
                 return false;
             }
@@ -114,12 +114,12 @@ private:
         {
             ECE141::BufferManager<char> theBuf1;
             theBuf1.willExpand(100);
-            if (100 < theBuf1.getCapacity()) {
+            if (100 > theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
                 return false;
             }
             theBuf1.willExpand(200);
-            if (200 < theBuf1.getCapacity()) {
+            if (200 > theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
                 return false;
             }
@@ -134,12 +134,12 @@ private:
         theTracker.enable(true).reset();
         {
             ECE141::BufferManager<char> theBuf1(100);
-            if(100<theBuf1.getCapacity()) {
+            if(100>theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
                 return false;
             }
             theBuf1.willCompact(50);
-            if(50<theBuf1.getCapacity()) {
+            if(50>theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
                 return false;
             }
@@ -611,7 +611,6 @@ public:
             auto theWords=getWords(2);
 
 /*. UNCOMMENT HIS WHEN YOUR STRING IS WORKING...
-
     theTimer.start();
     ECE141::String temp("this is a block that gets reused");
     anOutput << "\nTesting ECE141::String class performance...\n";
@@ -628,7 +627,6 @@ public:
     }
     theTimer.stop();
     ECE141StringTime = theTimer.elapsed();
-
 */
 
             theTimer.start();
