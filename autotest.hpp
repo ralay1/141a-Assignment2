@@ -133,7 +133,7 @@ private:
         auto& theTracker = Tracker::instance();
         theTracker.enable(true).reset();
         {
-            ECE141::BufferManager<char> theBuf1(100);
+        ECE141::BufferManager<char> theBuf1(100);
             if(100>theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
                 return false;
