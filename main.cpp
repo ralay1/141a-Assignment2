@@ -28,47 +28,67 @@ int main(int argc, const char * argv[]) {
             std::cout << temp << " test " << kMsgs[true] << "\n";
         }
         else if("BufferOCF" == temp) {
-            std::cout<< temp << " test " << kMsgs[bufferManagerTest("OCFTest",theOutput)] << "\n";
+            auto result = bufferManagerTest("OCFTest",theOutput);
+            std::cout<< temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("OCF"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("OCFTest", theOutput)] << "\n";
+            auto result = stringTest("OCFTest", theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Expand"==temp) {
-            std::cout << temp << " test " << kMsgs[bufferManagerTest("ExpandTest",theOutput)] << "\n";
+            auto result = bufferManagerTest("ExpandTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Compact"==temp) {
-            std::cout << temp << " test " << kMsgs[bufferManagerTest("CompactTest",theOutput)] << "\n";
+            auto result = bufferManagerTest("CompactTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Insert"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("InsertTest",theOutput)] << "\n";
+            auto result = stringTest("InsertTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Append"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("AppendTest",theOutput)] << "\n";
+            auto result = stringTest("AppendTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Replace"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("ReplaceTest",theOutput)] << "\n";
+            auto result = stringTest("ReplaceTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Erase"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("EraseTest",theOutput)] << "\n";
+            auto result = stringTest("EraseTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Search"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("SearchTest",theOutput)] << "\n";
+            auto result = stringTest("SearchTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Compare"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("CompareTest",theOutput)] << "\n";
+            auto result = stringTest("CompareTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("Speed"==temp) {
-            std::cout << temp << " test " << kMsgs[stringTest("SpeedTest",theOutput)] << "\n";
+            auto result = stringTest("SpeedTest",theOutput);
+            std::cout << temp << " test " << kMsgs[result] << "\n";
+            return !result;
         }
         else if("All"==temp) {
-            stringTest.runTests();
-            bufferManagerTest.runTests();
+            return stringTest.runTests() && bufferManagerTest.runTests();
         }
         else{
             std::cout<<"Unknown test " << temp << "\n";
             return 1;
         }
-        std::cout << theOutput.str() << "\n";
     }
     return 0;
 }
