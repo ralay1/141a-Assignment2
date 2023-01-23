@@ -116,10 +116,12 @@ private:
             theBuf1.willExpand(100);
             if (100 < theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
+                return false;
             }
             theBuf1.willExpand(200);
             if (200 < theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
+                return false;
             }
 
         }
@@ -134,10 +136,12 @@ private:
             ECE141::BufferManager<char> theBuf1(100);
             if(100<theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
+                return false;
             }
             theBuf1.willCompact(50);
             if(50<theBuf1.getCapacity()) {
                 anOutput << "expand failed\n";
+                return false;
             }
         }
         theTracker.reportLeaks(anOutput);
