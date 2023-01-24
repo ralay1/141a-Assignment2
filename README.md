@@ -58,7 +58,7 @@ memory allocations and deallocations.  Then, you're going to build a `String` cl
 Finally, you're going to write tests for both classes, and then do a code review of another student's work.
 
 The `BufferManager` class should handle memory allocation, keeping track of the allocated size, expand and contract the size of the buffer as needed,
-and free the buffer memory when it is no longer needed. Whereas the `BufferManager` will handle memory management issues, the `String` class will handle all the operations that a string provides:
+and free the buffer memory when it is no longer needed. Among the starter code files there also exists Tracker.hpp which overloads the new and delete operators for this assignment. Tracker class tracks memory allocation and dealocations and will return memory leak details if there exists memory leaks in the code. Whereas the `BufferManager` will handle memory management issues, the `String` class will handle all the operations that a string provides: 
 
 - initialization
 - append, insert, delete, replace substring
