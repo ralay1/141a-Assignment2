@@ -49,33 +49,23 @@ namespace ECE141 {
         String& operator=(const String& aCopy)
             //add version to assign from const char*
         {
-            copyDataAndSize(aCopy);
+            copyData(aCopy);
             updateSize();
             return *this;
         }
         String& operator=(const char* aCopy)
             //add version to assign from const char*
         {
-            int len = sizeCharStar(aCopy);
-            data = new T[len + 1];
-            arraySize = len;
-            for (int i = 0; i < len; i++) {
-                data[i] = aCopy[i];
-            }
-            updateSize();
+            *this = charToString(aCopy);
             return *this;
         }
 
         size_t size() const {return length;}
 
         String charToString(const char* aCharStar) {
-            String temp;
+            String temp = String();
             int len = sizeCharStar(aCharStar);
-            temp.data = new T[len];
-            temp.arraySize = len;
-            for (int i = 0; i < len; i++) {
-                temp.data[i] = aCharStar[i];
-            }
+            temp.copyCharData(aCharStar, len);
             temp.updateSize();
             return temp;
         }
@@ -97,68 +87,56 @@ namespace ECE141 {
         }
 
         size_t updateSize() {
-            length = getCapacity();
-            return getCapacity();
+            length = findEndIndex(*this);
+            return length;
         }
 
         String  operator+(const String& aString)
             //add method to support "hello"+theStringObject
         {
-            String outString = String();
-            outString = *this += aString;
-            return outString;
+            return plus(aString);
         }
-        String  operator+(const char* aString)
+        String  operator+(const char* aCharStar)
             //add method to add const char*
         {
-            String outString = String();
-            outString = *this += aString;
-            return outString;
+            String temp = charToString(aCharStar);
+            return *this + temp;
         }
-
-        void plus(const String& someData) {
-            int len = sizeOther(someData);
-            for (int i = findEndIndex(); i < len; i++) {
-                data[i] = someData[(size_t)(i - findEndIndex())];
-            }
-        }
-        size_t findEndIndex() {
-            char temp = 'a';
+        String plus(const String& moreData) {
+            String temp = String();
             int i = 0;
-            while (data[i] != NULL && i < getCapacity()) {
+            if (willExpand(moreData.length)) { temp.expand(length + moreData.length); }
+            else { temp.expand(length); }
+            while (data[i] != '\0') {
+                temp.data[i] = data[i];
+                i++;
+            }
+            i = 0;
+            while (moreData.data[i] != '\0') {
+                temp.data[i+length] = moreData[i]; 
+                i++;
+            }
+            temp.data[length+moreData.length] = '\0';
+            temp.updateSize();
+            return temp;
+        }
+        size_t findEndIndex(const String& aString) {
+            int i = 0;
+            while (aString.data[i] != '\0') {
                 i++;
             }
             return i;
         }
-        size_t sizeOther(const String& someData) {
-            return sizeof(someData) / sizeof(char);
-        }
 
-        String& operator+=(const String& aString)
-        {
-            {
-                if (willExpand(aString.size())) {
-                    expand(aString.size());
-                    plus(aString);
-                    return *this;
-                }
-                else {
-                    plus(aString);
-                    return *this;
-                }
-            }
+        String& operator+=(const String& aString){
+            plus(aString);
+            updateSize();
+            return *this;
         }
-        String& operator+=(const char* aString)
+        String& operator+=(const char* aString) {
             //add method to append const char*
-        {
-            String temp = aString;
-            if (willExpand(temp.size())) {
-                expand(temp.size());
-                plus(aString);
-                return *this;
-            }
-            else
-                plus(aString);
+            String temp = charToString(aString);
+            *this += temp;
             return *this;
         }
 
