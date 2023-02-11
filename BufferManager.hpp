@@ -23,7 +23,8 @@ namespace ECE141   {
             arraySize = 0;
         }   
         BufferManager(const BufferManager& aCopy) { //finish me - copy constructor
-            copyDataAndSize(aCopy);
+            arraySize = 0;
+            copyData(aCopy);
         }
         BufferManager(size_t aSize) { //finish me - constructor with predefined size
             data = new T[aSize+1];
@@ -56,19 +57,27 @@ namespace ECE141   {
         T* getBuffer() const {
             return data;
         }
-        T* trim() {
-            for (int i = 0; i < arraySize; i++) {
-                
+
+        void copyData(const BufferManager& aCopy) {
+            if (willExpand(aCopy.getCapacity())) { 
+                expand(aCopy.getCapacity()); 
             }
-            return *this;
+            int i = 0;
+            while (aCopy.data[i] != '\0') {
+                 data[i] = aCopy.data[i];
+                 i++;
+            }
+            data[getCapacity()] = '\0';
         }
 
-        void copyDataAndSize(const BufferManager& aCopy) {
-            data = new T[aCopy.arraySize];
-            arraySize = aCopy.arraySize;
-            for (int i = 0; i < arraySize; i++) {
-                data[i] = aCopy.data[i];
+        void copyCharData(const char* aCopy, int length) {
+            if (willExpand(length)) { expand(length); }
+            int i = 0;
+            while (aCopy[i] != '\0') {
+                data[i] = aCopy[i];
+                i++;
             }
+            data[length] = '\0';
         }
 
         // append to front
@@ -92,13 +101,12 @@ namespace ECE141   {
         }
         void expand(size_t aNewSize) {
             data = new T[aNewSize + 10];
+            arraySize = aNewSize+10;
         }
         void compact(size_t aNewSize) {
-            data = new T[aNewSize - 10];
+            data = new T[aNewSize +1];
         }
-        size_t sizeOther(T* someData) {
-            return someData.arraySize;
-        }
+        
     };
 
 }
